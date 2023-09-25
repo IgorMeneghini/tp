@@ -51,7 +51,7 @@ public class ExternalSorting {
             tempSubRaf.add(new RandomAccessFile(tempSubFilesName.get(i), "rw"));
         }
         distribution(memorySize, numberOfWays, tempRaf);
-        intercalation(tempRaf, tempSubRaf, numberOfWays);
+        intercalation(tempRaf, tempSubRaf, numberOfWays, memorySize);
     }
 
     void distribution(int memorySize, int numberOfWays, List<RandomAccessFile> tempRaf) throws IOException {
@@ -76,12 +76,14 @@ public class ExternalSorting {
         }
     }
 
-    void intercalation(List<RandomAccessFile> tempRaf, List<RandomAccessFile> tempSubRaf, int numberOfWays)
+    void intercalation(List<RandomAccessFile> tempRaf, List<RandomAccessFile> tempSubRaf, int numberOfWays,
+            int memorySize)
             throws IOException {
         int circularCounter = 0;
         int subCircularCounter = 0;
-        for (int i = 0; i < numberOfWays; i++) {// vai percorrer o numero de elementos que tem que ser add ao novo
-            // arquivo exemplo intercarlar 3 registros ai vão ser 6 com 2 caminhos
+        for (int i = 0; i < numberOfWays * memorySize; i++) {// vai percorrer o numero de elementos que tem que ser add
+                                                             // ao novoarquivo exemplo intercarlar 3 registros ai vão
+                                                             // ser 6 com 2 caminhos
             long getFilePointerLast = tempRaf.get(0).getFilePointer();
             int getIndexFromLastLower = 0;
             Film lower = readFilm(tempRaf.get(0));
@@ -98,7 +100,7 @@ public class ExternalSorting {
                     tempRaf.get(j).seek(tempGetFilePointerLast);
                 }
             }
-            
+
         }
 
         circularCounter = (++circularCounter) % numberOfWays;
@@ -123,7 +125,7 @@ public class ExternalSorting {
             return; // No need to sort
         }
         quickSort(arr, 0, arr.size() - 1);
-    }
+    }   
 
     private void quickSort(List<Film> arr, int low, int high) {
         if (low < high) {
