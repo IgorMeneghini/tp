@@ -18,7 +18,7 @@ public class ExternalMergeSorting {
         try {
             raf = new RandomAccessFile(dbFilePath, "r");
             raf.seek(4);
-            this.outputFilePath = "sortedFilms.db";
+            this.outputFilePath = "/home/igor_pc/Code/tp/DataBase/sortedFilms.db";
             RandomAccessFile raf = new RandomAccessFile(outputFilePath, "rw");
             raf.setLength(0);
             raf.close();
