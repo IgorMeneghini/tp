@@ -44,6 +44,29 @@ public class Crud {
         }
     }
 
+    public void create(Film film, String dbFilePath) {
+        try (RandomAccessFile raf = new RandomAccessFile(dbFilePath, "rw")) {
+            int lastID = 0;
+            if (raf.length() != 0) {
+
+                raf.seek(0);
+                lastID = raf.readInt();
+            }
+            raf.seek(0);
+            film.setId(lastID + 1);
+            raf.writeInt(film.getId());
+
+            byte[] array = film.toByteArray();
+            raf.seek(raf.length());
+            raf.writeChar(tombstone);
+            raf.writeInt(array.length);
+            raf.write(array);
+            // System.out.println(film.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Film sequencialSearch(int id) {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(dbFilePath, "rw")) {
             randomAccessFile.seek(4);
@@ -66,10 +89,9 @@ public class Crud {
         return null;
     }
 
-    public void readAll() {
+    public void readAll(String dbFilePath) {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(dbFilePath, "rw")) {
             randomAccessFile.seek(4);
-
             while (randomAccessFile.getFilePointer() < randomAccessFile.length()) {
                 char tombstone = randomAccessFile.readChar();
                 int filmSize = randomAccessFile.readInt();
@@ -153,6 +175,25 @@ public class Crud {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static Film readFilm(RandomAccessFile raf) throws IOException {
+        if (raf.getFilePointer() < raf.length()) {
+            Film film = new Film();
+            film.setTombstone(raf.readChar());
+            while (film.getTombstone() != tombstone) {
+                int registerSize = raf.readInt();
+                raf.skipBytes(registerSize);
+                film.setTombstone(raf.readChar());
+            }
+            int registerSize = raf.readInt();
+            byte[] filmData = new byte[registerSize];
+            raf.read(filmData);
+            film.fromByteArray(filmData);
+
+            return film;
+        }
+        return null;
     }
 
     public static void createInTempFiles(Film film, RandomAccessFile raf) {
