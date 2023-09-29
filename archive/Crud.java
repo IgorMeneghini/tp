@@ -89,6 +89,29 @@ public class Crud {
         return null;
     }
 
+    public static long getFilePointerFilm(int id) {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(dbFilePath, "rw")) {
+            randomAccessFile.seek(4);
+            while (randomAccessFile.getFilePointer() < randomAccessFile.length()) {
+                long pos = randomAccessFile.getFilePointer();
+                char tombstone = randomAccessFile.readChar();
+                int filmSize = randomAccessFile.readInt();
+                byte[] filmData = new byte[filmSize];
+                randomAccessFile.read(filmData);
+
+                Film film = new Film();
+                film.fromByteArray(filmData);
+                film.setTombstone(tombstone);
+                if (film.getTombstone() != '&' && film.getId() == id) {
+                    return pos;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public void readAll(String dbFilePath) {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(dbFilePath, "rw")) {
             randomAccessFile.seek(4);

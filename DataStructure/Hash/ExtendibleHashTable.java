@@ -1,4 +1,4 @@
-package DataStructure;
+package DataStructure.Hash;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -18,15 +18,23 @@ public class ExtendibleHashTable<K, V> {
         this.directoryDepth = 0;
         this.bucketSize = bucketSize;
         this.directory = new ArrayList<>();
-        for (int i = 0; i < bucketSize; i++) {
-            this.directory.add(new Bucket<>()); // Inicializa os buckets como listas vazias
-        }
+        this.directory.add(new Bucket<>());
+
     }
 
     public void startHash() throws IOException {
         RandomAccessFile raf = new RandomAccessFile("DataBase/films.db", "r");
         raf.seek(4);
-        while (raf.getFilePointer() < raf.length()) {
+        /*
+         * while (raf.getFilePointer() < raf.length()) {
+         * long address = raf.getFilePointer();
+         * Film film = Crud.readFilm(raf);
+         * int key = film.getId();
+         * set(key, address);
+         * }
+         */
+
+        for (int i = 0; i < 501; i++) {
             long address = raf.getFilePointer();
             Film film = Crud.readFilm(raf);
             int key = film.getId();
@@ -48,38 +56,40 @@ public class ExtendibleHashTable<K, V> {
         Bucket<Integer, Long> oldBucket = directory.get(bucketIndex);
         directory.get(bucketIndex).entries.clear();
         this.directoryDepth++;
-        for (int i = directory.size(); i < (int) Math.pow(2, directoryDepth); i++) {
+        int limit = (int) Math.pow(2, directoryDepth);
+        for (int i = directory.size(); i < limit; i++) {
             this.directory.add(new Bucket<>());
         }
         for (Integer key : oldBucket.entries.keySet()) {
-            Long value = oldBucket.get(key);
+            Long value = oldBucket.entries.get(key);
+            directory.get(bucketIndex).entries.put(1, (long) 28387192);
+            directory.get(bucketIndex).entries.get(1);
             set(key, value);
         }
     }
 
     public Film get(int key) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile("DataBase/films.db", "r");
+        RandomAccessFile raf = new RandomAccessFile("DataBase/films.db", "r");
 
-    int bucketIndex = calculateBucketIndex(key);
-    Bucket<Integer, Long> bucket = directory.get(bucketIndex);
-    
-    for (Map.Entry<Integer, Long> entry : bucket.entries.entrySet()) {
-        Integer tempKey = entry.getKey();
-        if (tempKey.equals(key)) {
-            raf.seek(entry.getValue());
-            Film film = Crud.readFilm(raf);
-            raf.close(); // Close the file here
-            return film;
+        int bucketIndex = calculateBucketIndex(key);
+        Bucket<Integer, Long> bucket = directory.get(bucketIndex);
+
+        for (Map.Entry<Integer, Long> entry : bucket.entries.entrySet()) {
+            Integer tempKey = entry.getKey();
+            if (tempKey == key) {
+                raf.seek(entry.getValue());
+                Film film = Crud.readFilm(raf);
+                raf.close(); // Close the file here
+                return film;
+            }
         }
-    }
-    
-    raf.close(); // Close the file in case the film is not found
-    return null; // Returns null if the film is not found
-}
 
+        raf.close(); // Close the file in case the film is not found
+        return null; // Returns null if the film is not found
+    }
 
     private int calculateBucketIndex(int key) {
-        int bucketIndex = key * (int) Math.pow(2, directoryDepth - 1);
+        int bucketIndex = key * (int) Math.pow(2, directoryDepth);
         return bucketIndex % directory.size();
     }
 
