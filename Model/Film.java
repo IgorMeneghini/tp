@@ -64,6 +64,10 @@ public class Film {
         this.list = rating + "," + duration;
     }
 
+    public Film(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }

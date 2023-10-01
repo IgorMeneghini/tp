@@ -38,6 +38,8 @@ public class InvertedList {
     }
 
     public void insert(Film film) {
+        Crud crud = new Crud(false);
+        crud.create(film);
         long address = Crud.getFilePointerFilm(film.getId());
         String type = film.getType();
         insert(type, address);
@@ -68,6 +70,9 @@ public class InvertedList {
 
     public boolean search(Film film) {
         long pos = Crud.getFilePointerFilm(film.getId());
+        if (pos == 0) {
+            return false;
+        }
         if (index.containsKey(film.getType())) {
             return search(film.getType(), pos);
         } else {

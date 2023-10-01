@@ -75,7 +75,7 @@ public class ExternalMergeSorting {
     }
 
     private void mergeSortedChunks2(List<String> chunkFileNames, String outputFile) throws IOException {
-        Crud crud = new Crud();
+        Crud crud = new Crud(true);
         List<RandomAccessFile> tempRaf = createRandomAccessFiles(chunkFileNames);
         List<Film> queue = startQueue(tempRaf);
 

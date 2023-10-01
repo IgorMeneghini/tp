@@ -35,6 +35,8 @@ public class InvertedList2 {
     }
 
     public void insert(Film film) {
+        Crud crud = new Crud(false);
+        crud.create(film);
         long address = Crud.getFilePointerFilm(film.getId());
         String duration = film.getTimeDuration();
         insert(duration, address);
@@ -65,6 +67,10 @@ public class InvertedList2 {
 
     public boolean search(Film film) {
         long pos = Crud.getFilePointerFilm(film.getId());
+
+        if (pos == 0) {
+            return false;
+        }
         if (index.containsKey(film.getTimeDuration())) {
             return search(film.getTimeDuration(), pos);
         } else {
