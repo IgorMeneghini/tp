@@ -11,22 +11,30 @@ import Model.Film;
 import archive.Crud;
 
 /**
- * InvertedList
+ * InvertedList class represents an inverted list data structure for storing and
+ * searching films by type.
  */
 public class InvertedList {
     private Map<String, List<Long>> index;
-    RandomAccessFile raf;
+    private RandomAccessFile raf;
 
-    // Construtor
+    /**
+     * Constructor initializes the inverted list and opens the database file.
+     */
     public InvertedList() {
         index = new HashMap<>();
         try {
             raf = new RandomAccessFile("DataBase/films.db", "r");
-        } catch (Exception e) {
-            // TODO: handle exception
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Initializes the inverted list by reading films from the database file.
+     *
+     * @throws IOException if there is an issue reading the file.
+     */
     public void startList() throws IOException {
         raf.seek(4);
         while (raf.getFilePointer() < raf.length()) {
@@ -37,6 +45,11 @@ public class InvertedList {
         }
     }
 
+    /**
+     * Inserts a film into the inverted list.
+     *
+     * @param film The film to insert.
+     */
     public void insert(Film film) {
         Crud crud = new Crud(false);
         crud.create(film);
@@ -45,6 +58,12 @@ public class InvertedList {
         insert(type, address);
     }
 
+    /**
+     * Inserts a film address associated with its type into the inverted list.
+     *
+     * @param type    The type of the film.
+     * @param address The address of the film in the database.
+     */
     public void insert(String type, long address) {
         if (!index.containsKey(type)) {
             index.put(type, new ArrayList<>());
@@ -52,6 +71,12 @@ public class InvertedList {
         index.get(type).add(address);
     }
 
+    /**
+     * Removes a film from the inverted list.
+     *
+     * @param film The film to remove.
+     * @return True if the film was removed successfully, false otherwise.
+     */
     public boolean remove(Film film) {
         boolean resp = false;
         String type = film.getType();
@@ -68,6 +93,12 @@ public class InvertedList {
         return resp;
     }
 
+    /**
+     * Searches for a film in the inverted list.
+     *
+     * @param film The film to search for.
+     * @return True if the film is found in the inverted list, false otherwise.
+     */
     public boolean search(Film film) {
         long pos = Crud.getFilePointerFilm(film.getId());
         if (pos == 0) {
@@ -80,6 +111,14 @@ public class InvertedList {
         }
     }
 
+    /**
+     * Searches for a film address associated with its type in the inverted list.
+     *
+     * @param type The type of the film.
+     * @param pos  The address of the film in the database.
+     * @return True if the film address is found in the inverted list, false
+     *         otherwise.
+     */
     public boolean search(String type, long pos) {
         return index.get(type).contains(pos);
     }

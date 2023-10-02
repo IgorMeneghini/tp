@@ -11,94 +11,114 @@ import archive.FilmParser;
 import Algorithm.ExternalMergeSorting;
 import Model.Film;
 
-class Main {
+public class Main {
     private static final String dbFilePath = "DataBase\\films.db"; // Path to the database file
 
     public static void main(String[] args) throws IOException {
-        FilmParser.start(); // Start parsing data
+        // Start parsing data from CSV
+        FilmParser.start();
 
         int option = 0; // Initialize the option variable
+
         try (Scanner sc = new Scanner(System.in)) {
             while (true) { // Start an infinite loop for the main menu
-                System.out.println("Selecione:\n" +
+                // Display the main menu options
+                System.out.println("Select an option:\n" +
                         "1- CRUD\n" +
-                        "2- Ordenação Externa\n" +
+                        "2- External Sorting\n" +
                         "3- Hash\n" +
-                        "4- Lista Invertida\n" +
-                        "5- Árvore B\n" +
-                        "6- Sair");
+                        "4- Inverted List\n" +
+                        "5- B-Tree\n" +
+                        "6- Exit");
 
                 option = Integer.parseInt(sc.nextLine()); // Read user input as an integer
 
                 switch (option) {
                     case 1:
-                        Crud crud = new Crud(true); // Create a CRUD instance
+                        // Create a CRUD instance
+                        Crud crud = new Crud(true);
+
                         while (true) { // Start an inner loop for CRUD operations
-                            System.out.println("O que quer fazer?:\n" +
+                            // Display CRUD operation options
+                            System.out.println("What would you like to do?:\n" +
                                     "1- Create\n" +
                                     "2- Read\n" +
                                     "3- Update\n" +
                                     "4- Delete\n" +
-                                    "5- Sair");
+                                    "5- Exit");
 
                             option = Integer.parseInt(sc.nextLine()); // Read user input for CRUD operation
 
                             switch (option) {
                                 case 1:
-                                    Film film = new Film(8555, "Igor O criador", "Movie", 9999999, "R,90 min");
+                                    // Create a Film object and add it to the database
+                                    Film film = new Film(8555, "Igor O Criador", "Movie", 9999999, "R, 90 min");
                                     crud.create(film, dbFilePath);
                                     break;
                                 case 2:
+                                    // Read all films from the database
                                     crud.readAll(dbFilePath);
                                     break;
                                 case 3:
-                                    film = new Film(1, "Igor O criador", "Movie", 9999999, "R,90 min");
+                                    // Update a film in the database
+                                    film = new Film(1, "Igor O Criador", "Movie", 9999999, "R, 90 min");
                                     crud.update(film);
                                     break;
                                 case 4:
+                                    // Delete a film from the database
                                     crud.delete(1);
                                     break;
                                 case 5:
-                                    System.out.println("Saindo do CRUD.");
+                                    System.out.println("Exiting CRUD.");
                                     break;
                                 default:
-                                    System.out.println("Opção inválida. Por favor, selecione uma opção válida.");
+                                    System.out.println("Invalid option. Please select a valid option.");
                                     break;
                             }
+
                             if (option == 5) {
                                 break; // Exit the inner CRUD loop
                             }
                         }
                         break;
+
                     case 2:
+                        // Perform external merge sorting on the data
                         ExternalMergeSorting externalMergeSorting = new ExternalMergeSorting();
                         externalMergeSorting.externalMergeSortSort(1000);
+                        // Re-parse data after sorting
                         FilmParser.start();
                         break;
+
                     case 3:
+                        // Initialize and perform operations on the Extendible Hash Table
                         ExtendibleHashTable<Integer, Long> hash = new ExtendibleHashTable<>(500);
                         hash.startHash();
-                        System.out.println("Selecione um ID de busca: ");
+
+                        System.out.println("Select an ID to search: ");
                         int id = Integer.parseInt(sc.nextLine());
                         System.out.println(hash.get(id));
                         break;
+
                     case 4:
                         option = 1;
                         while (true) {
-                            System.out.println("1- Lista 1\n2- Lista 2\n3- sair");
+                            System.out.println("1- List 1\n2- List 2\n3- Exit");
                             option = Integer.parseInt(sc.nextLine());
                             if (option == 1) {
+                                // Initialize and perform operations on Inverted List 1
                                 InvertedList invertedList1 = new InvertedList();
-                                Film film = new Film(8555, "Igor O criador", "Movie", 9999999, "R,90 min");
-                                Film film2 = new Film(8556, "luis O criador", "Movie", 9999999, "R,70 min");
+                                Film film = new Film(8555, "Igor O Criador", "Movie", 9999999, "R, 50 min");
+                                Film film2 = new Film(8556, "Luis O Criador", "Movie", 9999999, "R, 70 min");
                                 invertedList1.startList();
                                 invertedList1.insert(film);
                                 System.out.println(invertedList1.search(film));
                                 System.out.println(invertedList1.search(film2));
                             } else if (option == 2) {
+                                // Initialize and perform operations on Inverted List 2
                                 InvertedList2 invertedList2 = new InvertedList2();
-                                Film film = new Film(8555, "Igor O criador", "Movie", 9999999, "R,50 min");
-                                Film film2 = new Film(8556, "luis O criador", "Movie", 9999999, "R,70 min");
+                                Film film = new Film(8555, "Igor O Criador", "Movie", 9999999, "R, 50 min");
+                                Film film2 = new Film(8556, "Luis O Criador", "Movie", 9999999, "R, 70 min");
                                 invertedList2.startList();
                                 invertedList2.insert(film);
                                 System.out.println(invertedList2.search(film));
@@ -108,19 +128,22 @@ class Main {
                             }
                         }
                         break;
+
                     case 5:
+                        // Placeholder for B-Tree operations
                         break;
+
                     case 6:
-                        System.out.println("Saindo");
+                        System.out.println("Exiting");
                         System.exit(0); // Exit the program
                         break;
+
                     default:
-                        System.out.println("Opção inválida. Por favor, selecione uma opção válida.");
+                        System.out.println("Invalid option. Please select a valid option.");
                         break;
                 }
             }
         } catch (NumberFormatException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

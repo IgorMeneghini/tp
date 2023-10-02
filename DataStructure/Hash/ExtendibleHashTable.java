@@ -22,6 +22,7 @@ public class ExtendibleHashTable<K, V> {
         this.directory.add(new HashMap<>());
     }
 
+    // Populate the hash table by reading data from a file
     public void startHash() throws IOException {
         RandomAccessFile raf = new RandomAccessFile("DataBase/films.db", "r");
         raf.seek(4);
@@ -35,6 +36,7 @@ public class ExtendibleHashTable<K, V> {
         raf.close(); // Close the file after reading
     }
 
+    // Insert a film into the hash table
     public void insert(Film film) {
         Crud crud = new Crud(false);
         crud.create(film);
@@ -42,7 +44,8 @@ public class ExtendibleHashTable<K, V> {
         set(film, pos);
     }
 
-    public void set(Film film, Long address) {
+    // Set a film in the hash table
+    private void set(Film film, Long address) {
         int key = film.getId();
         int bucketIndex = calculateBucketIndex(key);
         HashMap<Integer, Long> bucket = directory.get(bucketIndex);
@@ -52,11 +55,13 @@ public class ExtendibleHashTable<K, V> {
         }
     }
 
+    // Calculate the bucket index for a given key
     private int calculateBucketIndex(int key) {
-        int bucketIndex = key * (int) Math.pow(2, globalDepth - 1); // Cálculo do índice do bucket
-        return bucketIndex % directory.size(); // Retorna o índice ajustado para o tamanho da lista de buckets
+        int bucketIndex = key * (int) Math.pow(2, globalDepth - 1); // Calculate the bucket index
+        return bucketIndex % directory.size(); // Adjust the index to fit within the directory size
     }
 
+    // Extend the directory by splitting a bucket
     private void extendDirectory(int bucketIndex) {
         HashMap<Integer, Long> oldBucket = directory.get(bucketIndex);
         HashMap<Integer, Long> newBucket = new HashMap<>();
@@ -75,6 +80,7 @@ public class ExtendibleHashTable<K, V> {
         }
     }
 
+    // Resize the hash table when the global depth matches the directory size
     private void resizeHashTable() {
         List<HashMap<Integer, Long>> oldDirectory = directory;
         globalDepth++;
@@ -93,6 +99,7 @@ public class ExtendibleHashTable<K, V> {
         }
     }
 
+    // Get a film from the hash table based on its key
     public Film get(int key) throws IOException {
         RandomAccessFile raf = new RandomAccessFile("DataBase/films.db", "r");
 
@@ -110,7 +117,6 @@ public class ExtendibleHashTable<K, V> {
         }
 
         raf.close(); // Close the file in case the film is not found
-        return null; // Returns null if the film is not found
+        return null; // Return null if the film is not found
     }
-
 }

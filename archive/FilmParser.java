@@ -13,15 +13,20 @@ import java.util.Locale;
 import Model.Film;
 
 public class FilmParser {
+    // Define the path to the CSV file
     private static final String csvFilePath = "DataBase/netflix_titles.csv";
+    // Create an instance of the Crud class
     private static Crud crud = new Crud();
 
+    // Entry point for parsing
     public static void start() {
-
+        // Read all lines from the CSV file
         String[] lines = getLines(csvFilePath);
 
+        // Process each line
         for (String line : lines) {
             try {
+                // Parse the line and create a Film object
                 breakingTheLine(line);
             } catch (IOException e) {
                 System.err.println("Error processing line: " + line);
@@ -30,11 +35,13 @@ public class FilmParser {
         }
     }
 
+    // Parse a single line and create a Film object
     public static void breakingTheLine(String line) throws IOException {
         Film film = createFilmFromLine(line);
         crud.create(film);
     }
 
+    // Create a Film object from a line of CSV data
     private static Film createFilmFromLine(String line) {
         Film film = new Film();
         line = setId(line, film);
@@ -50,11 +57,12 @@ public class FilmParser {
         return film;
     }
 
+    // Get all lines from a CSV file
     public static String[] getLines(String csvFilePath) {
         List<String> linesList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
-            reader.readLine();
+            reader.readLine(); // Skip the header line
             String line;
             while ((line = reader.readLine()) != null) {
                 linesList.add(line);
@@ -65,6 +73,7 @@ public class FilmParser {
         return linesList.toArray(new String[0]);
     }
 
+    // Extract and set the ID field from a line
     public static String setId(String line, Film film) {
         int index = 0;
         StringBuilder sBuilder = new StringBuilder();
@@ -75,6 +84,7 @@ public class FilmParser {
         return line.substring(index + 1);
     }
 
+    // Extract and set the type field from a line
     public static String setType(String line, Film film) {
         int index = 0;
         StringBuilder sBuilder = new StringBuilder();
@@ -91,6 +101,7 @@ public class FilmParser {
         return line.substring(index);
     }
 
+    // Extract and set the title field from a line
     public static String setTitle(String line, Film film) {
         int index = 0;
         StringBuilder sBuilder = new StringBuilder();
@@ -113,6 +124,7 @@ public class FilmParser {
         return line.substring(index);
     }
 
+    // Extract and set the director field from a line
     public static String setDirector(String line, Film film) {
         int index = 0;
         StringBuilder sBuilder = new StringBuilder();
@@ -135,6 +147,7 @@ public class FilmParser {
         return line.substring(index);
     }
 
+    // Extract and set the cast field from a line
     public static String setCast(String line, Film film) {
         int index = 0;
         StringBuilder holdString = new StringBuilder();
@@ -165,6 +178,7 @@ public class FilmParser {
         return line.substring(index);
     }
 
+    // Extract and set the country field from a line
     public static String setCountry(String line, Film film) {
         int index = 0;
         StringBuilder holdString = new StringBuilder();
@@ -195,6 +209,7 @@ public class FilmParser {
         return line.substring(index);
     }
 
+    // Extract and set the date field from a line
     public static String setDate(String line, Film film) {
         int index = 1;
         StringBuilder holdString = new StringBuilder();
@@ -234,6 +249,7 @@ public class FilmParser {
         }
     }
 
+    // Extract and set the rating field from a line
     public static String setRating(String line, Film film) {
         int index = 0;
         StringBuilder sBuilder = new StringBuilder();
@@ -251,6 +267,7 @@ public class FilmParser {
         }
     }
 
+    // Extract and set the time duration field from a line
     public static String setTimeDuration(String line, Film film) {
         int index = 0;
         StringBuilder sBuilder = new StringBuilder();
@@ -260,10 +277,10 @@ public class FilmParser {
         }
         film.setTimeDuration(sBuilder.toString());
         if (index + 1 < line.length()) {
-
             return line.substring(index + 1);
         } else {
             return "";
         }
     }
 }
+

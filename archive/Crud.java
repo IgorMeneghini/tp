@@ -186,23 +186,22 @@ public class Crud {
         try (RandomAccessFile raf = new RandomAccessFile(dbFilePath, "rw")) {
             raf.seek(4); // Move the file pointer past the initial integer (not explained in the code)
 
-            while (raf.getFilePointer() < raf.length()) { // Iterate through the file
-                long pos = raf.getFilePointer(); // Store the current file pointer position
+            while (raf.getFilePointer() < raf.length()) { 
+                long pos = raf.getFilePointer(); 
 
-                Film film = new Film(); // Create a new Film object to hold the data
-                film.setTombstone(raf.readChar()); // Read the tombstone character
+                Film film = new Film();
+                film.setTombstone(raf.readChar()); 
 
-                int filmSize = raf.readInt(); // Read the size of the film data
-                byte[] filmData = new byte[filmSize]; // Create a byte array to store the film data
+                int filmSize = raf.readInt(); 
+                byte[] filmData = new byte[filmSize]; 
 
-                raf.read(filmData); // Read the film data into the byte array
-                film.fromByteArray(filmData); // Deserialize the film data into the Film object
-
+                raf.read(filmData); 
+                film.fromByteArray(filmData); 
                 // Check if the film is marked for deletion (tombstone character) and has the
                 // specified ID
                 if (film.getTombstone() == tombstone && film.getId() == id) {
-                    raf.seek(pos); // Move the file pointer back to the position before the tombstone character
-                    raf.writeChar('&'); // Mark the film as deleted by writing '&' as the tombstone
+                    raf.seek(pos);
+                    raf.writeChar('&'); 
                     return true; // Return true to indicate successful deletion
                 }
             }
@@ -214,22 +213,22 @@ public class Crud {
 
     // Method to read a Film object from a RandomAccessFile
     public static Film readFilm(RandomAccessFile raf) throws IOException {
-        if (raf.getFilePointer() < raf.length()) { // Check if there is more data to read
-            Film film = new Film(); // Create a new Film object to hold the data
-            film.setTombstone(raf.readChar()); // Read the tombstone character
+        if (raf.getFilePointer() < raf.length()) { 
+            Film film = new Film();
+            film.setTombstone(raf.readChar());
 
             // Read and skip through records until a tombstone character is encountered
             while (film.getTombstone() != tombstone) {
-                int registerSize = raf.readInt(); // Read the size of the current record
-                raf.skipBytes(registerSize); // Skip over the record data
-                film.setTombstone(raf.readChar()); // Read the tombstone character of the next record
+                int registerSize = raf.readInt();
+                raf.skipBytes(registerSize); 
+                film.setTombstone(raf.readChar()); 
             }
 
-            int registerSize = raf.readInt(); // Read the size of the film data
-            byte[] filmData = new byte[registerSize]; // Create a byte array to store the film data
+            int registerSize = raf.readInt(); 
+            byte[] filmData = new byte[registerSize]; 
 
-            raf.read(filmData); // Read the film data into the byte array
-            film.fromByteArray(filmData); // Deserialize the film data into the Film object
+            raf.read(filmData); 
+            film.fromByteArray(filmData); 
 
             return film; // Return the deserialized Film object
         }
@@ -240,11 +239,11 @@ public class Crud {
     // code)
     public static void createInTempFiles(Film film, RandomAccessFile raf) {
         try {
-            byte[] array = film.toByteArray(); // Convert the Film object to a byte array
-            raf.seek(raf.length()); // Move the file pointer to the end of the file
-            raf.writeChar(tombstone); // Write the tombstone character
-            raf.writeInt(array.length); // Write the length of the film data
-            raf.write(array); // Write the film data
+            byte[] array = film.toByteArray(); 
+            raf.seek(raf.length()); 
+            raf.writeChar(tombstone);
+            raf.writeInt(array.length); 
+            raf.write(array); 
         } catch (IOException e) {
             e.printStackTrace(); // Handle any IOException by printing the stack trace
         }
