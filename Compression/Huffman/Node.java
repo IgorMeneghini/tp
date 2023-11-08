@@ -1,38 +1,18 @@
 package Compression.Huffman;
 
 class Node implements Comparable<Node> {
-    Byte data;
-    private final int frequency;
-    private Node leftNode;
-    private Node rightNode;
- 
-    public Node(Node leftNode, Node rightNode) {
-        this.frequency = leftNode.getFrequency() + rightNode.getFrequency();
-        this.leftNode = leftNode;
-        this.rightNode = rightNode;
-    }
+    byte data;
+    int frequency;
+    Node left;
+    Node right;
 
-   public Node(int frequency){
-    this.frequency = frequency;
-    this.leftNode = null;
-    this.rightNode = null;
-   }
-    private int getFrequency() {
-        return frequency;
+    public Node(byte data, int frequency) {
+        this.data = data;
+        this.frequency = frequency;
     }
-
 
     @Override
-    public int compareTo(Node node) {
-        return Integer.compare(frequency, node.getFrequency());
+    public int compareTo(Node other) {
+        return this.frequency - other.frequency;
     }
-
-    public Node getLeftNode() {
-        return leftNode;
-    }
-
-    public Node getRightNode() {
-        return rightNode;
-    }
-
 }
