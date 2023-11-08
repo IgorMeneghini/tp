@@ -4,7 +4,7 @@ import java.io.*;
 
 import Compression.Huffman.Huffman;
 
-public class Main2 {
+public class HuffmanMain {
     private static final String dbFilePath = "DataBase\\films.db"; // Path to the database file
     private static final String compressedFile = "DataBase\\filmsCompressedHuffman.db";
     private static final String decodedFile = "dataBase\\filmsDecodedHuffman.db";
