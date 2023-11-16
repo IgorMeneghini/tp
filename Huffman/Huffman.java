@@ -1,4 +1,4 @@
-package Compression.Huffman;
+package Huffman;
 
 import java.util.*;
 

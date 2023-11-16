@@ -2,7 +2,7 @@ package app;
 
 import java.io.*;
 
-import Compression.Huffman.Huffman;
+import Huffman.Huffman;
 
 public class HuffmanMain {
     private static final String dbFilePath = "DataBase\\films.db"; // Path to the database file
@@ -11,9 +11,9 @@ public class HuffmanMain {
 
     public static void main(String[] args) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(dbFilePath, "rw");
-        byte[] byteArray = new byte[(int) raf.length()];
-        raf.read(byteArray);
-        byte[] compressedByteArray = Huffman.compress(byteArray);
+        byte[] inputData = new byte[(int) raf.length()];
+        raf.read(inputData);
+        byte[] compressedByteArray = Huffman.compress(inputData);
         raf.close();
 
         raf = new RandomAccessFile(compressedFile, "rw");
@@ -24,5 +24,8 @@ public class HuffmanMain {
         raf = new RandomAccessFile(decodedFile, "rw");
         raf.write(decodedByteArray);
         raf.close();
+
+       
+
     }
 }
