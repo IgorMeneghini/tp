@@ -71,6 +71,7 @@ public class Encoder {
         }
         System.out.println();
 
+        
         return fromIntArrayToByteArray(result);
     }
 
