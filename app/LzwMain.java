@@ -3,12 +3,12 @@ package app;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import Lzw.*;
+import Compressions.Lzw.*;
 
 public class LzwMain {
 
     public static void main(String[] args) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile("DataBase\\films.db", "rw");
+        RandomAccessFile raf = new RandomAccessFile("DataBase/films.db", "rw");
         byte[] inputData = new byte[(int) raf.length()];
         raf.read(inputData);
         Encoder lzwEncoder = new Encoder(inputData);

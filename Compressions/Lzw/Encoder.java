@@ -1,4 +1,4 @@
-package Lzw;
+package Compressions.Lzw;
 
 import java.util.ArrayList;
 import java.util.Arrays;
