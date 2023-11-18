@@ -11,6 +11,7 @@ import archive.FilmParser;
 import Algorithm.ExternalMergeSorting;
 import Compressions.Huffman.Huffman;
 import Model.Film;
+import Patterns.BoyerMoore.BoyerMoore;
 import Patterns.KMP.Kmp;
 
 public class Main {
@@ -36,7 +37,8 @@ public class Main {
                         "5- B-Tree\n" +
                         "6- Huffman\n" +
                         "7- KMP\n" +
-                        "8- Exit");
+                        "8- Boyer Moore\n" + 
+                        "9- Exit");
 
                 option = Integer.parseInt(sc.nextLine()); // Read user input as an integer
 
@@ -220,6 +222,25 @@ public class Main {
                         }
                         break;
                     case 8:
+                        Scanner scanner = new Scanner(System.in);
+                        raf = new RandomAccessFile("DataBase/films.db", "rw");
+                        byte[] data = new byte[(int) raf.length()];
+                        raf.read(data);
+
+                        System.out.print("Input the pattern: ");
+                        String patternString = (scanner.nextLine());
+                        byte[] pattern = patternString.getBytes();
+
+                        BoyerMoore boyerMoore = new BoyerMoore(pattern, data);
+                        int result = boyerMoore.boyerMooreSearch();
+
+                        if (result != -1) {
+                            System.out.println("Pattern found at index " + result);
+                        } else {
+                            System.out.println("Pattern not found");
+                        }
+                        break;
+                    case 9:
                         System.out.println("Exiting");
                         System.exit(0); // Exit the program
                         break;
