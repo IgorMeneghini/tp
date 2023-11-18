@@ -58,11 +58,11 @@ public class Lzw {
     }
 
     public void decode() throws IOException {
-        List<Integer> result = readFile();
+        List<Integer> integerList = readFile();
         System.out.println();
         List<Byte> byteArray = new ArrayList<>();
     
-        for (Integer integer : result) {
+        for (Integer integer : integerList) {
             System.out.print(integer + " ");
             List<Byte> dictionaryEntry = this.dictionary.get(integer);
     

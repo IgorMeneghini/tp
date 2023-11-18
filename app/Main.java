@@ -11,6 +11,7 @@ import archive.FilmParser;
 import Algorithm.ExternalMergeSorting;
 import Compressions.Huffman.Huffman;
 import Model.Film;
+import Patterns.KMP.Kmp;
 
 public class Main {
 
@@ -34,7 +35,8 @@ public class Main {
                         "4- Inverted List\n" +
                         "5- B-Tree\n" +
                         "6- Huffman\n" +
-                        "7- Exit");
+                        "7- KMP\n" +
+                        "8- Exit");
 
                 option = Integer.parseInt(sc.nextLine()); // Read user input as an integer
 
@@ -181,16 +183,54 @@ public class Main {
 
                         }
                     case 7:
+                        try (Scanner scanner = new Scanner(System.in)) {
+                            while (true) {
+                                System.out.println("1. KMP");
+                                System.out.println("2. Sair");
+
+                                int choice = Integer.parseInt(scanner.nextLine());
+
+                                if (choice == 1) {
+                                    raf = new RandomAccessFile("DataBase/films.db", "rw");
+                                    byte[] data = new byte[(int) raf.length()];
+                                    raf.read(data);
+
+                                    System.out.print("Input the pattern: ");
+                                    String patternString = (scanner.nextLine());
+                                    byte[] pattern = patternString.getBytes();
+                                    Kmp kmp = new Kmp(pattern, data);
+
+                                    int[] result = kmp.kmpSearch();
+
+                                    if (result[1] != -1) {
+                                        System.out.println(
+                                                "Pattern found at position " + result[1] + " with " + result[0]
+                                                        + " comparisons.");
+                                    } else {
+                                        System.out.println("Pattern not found.");
+                                    }
+                                    raf.close();
+                                } else if (choice == 2) {
+                                    System.out.println("Exiting...");
+                                    break;
+                                } else {
+                                    System.out.println("Invalid option. Please try again.");
+                                }
+                            }
+                        }
+                        break;
+                    case 8:
                         System.out.println("Exiting");
                         System.exit(0); // Exit the program
                         break;
-
                     default:
                         System.out.println("Invalid option. Please select a valid option.");
                         break;
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (
+
+        NumberFormatException e) {
             e.printStackTrace();
         }
 
