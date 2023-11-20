@@ -1,7 +1,7 @@
 package app;
 
-import java.io.IOException;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 import DataStructure.Hash.ExtendibleHashTable;
 import DataStructure.InvertedList.InvertedList;
@@ -9,11 +9,16 @@ import DataStructure.InvertedList.InvertedList2;
 import archive.Crud;
 import archive.FilmParser;
 import Algorithm.ExternalMergeSorting;
+import Compressions.Huffman.Huffman;
 import Model.Film;
+import Patterns.BoyerMoore.BoyerMoore;
+import Patterns.KMP.Kmp;
 
 public class Main {
-    
-    private static final String dbFilePath = "DataBase\\films.db"; // Path to the database file
+
+    private static final String dbFilePath = "DataBase/films.db"; // Path to the database file
+    private static final String compressedHuffmanFile = "DataBase/HuffmanCompressed.db";
+    private static final String decodedHuffmanFile = "DataBase/HuffmanUnzipped.db";
 
     public static void main(String[] args) throws IOException {
         // Start parsing data from CSV
@@ -30,7 +35,10 @@ public class Main {
                         "3- Hash\n" +
                         "4- Inverted List\n" +
                         "5- B-Tree\n" +
-                        "6- Exit");
+                        "6- Huffman\n" +
+                        "7- KMP\n" +
+                        "8- Boyer Moore\n" + 
+                        "9- Exit");
 
                 option = Integer.parseInt(sc.nextLine()); // Read user input as an integer
 
@@ -135,17 +143,117 @@ public class Main {
                         break;
 
                     case 6:
+                        boolean exit = false;
+                        RandomAccessFile raf = new RandomAccessFile(dbFilePath, "rw");
+                        byte[] inputData = new byte[(int) raf.length()];
+                        raf.read(inputData);
+                        Huffman huffman = new Huffman(inputData);
+                        raf.close();
+
+                        huffman.compress();
+                        raf = new RandomAccessFile(compressedHuffmanFile, "rw");
+                        raf.write(huffman.getCompressedBytes());
+                        raf.close();
+                        System.out.println("Successfully compressed file.");
+                        while (!exit) {
+
+                            System.out.println("1- Decompress\n2- Exit and print decompress");
+                            option = sc.nextInt();
+                            if (option == 1) {
+
+                                huffman.decode(huffman.getCompressedBytes());
+                                raf = new RandomAccessFile(decodedHuffmanFile, "rw");
+                                raf.write(huffman.getDecodedBytes());
+
+                            } else {
+                                Crud crudHuffman = new Crud(true);
+                                crudHuffman.readAll(decodedHuffmanFile);
+                                System.out.println("Original size: " + huffman.getInputData().length + " bytes");
+                                System.out
+                                        .println("Compressed size: " + huffman.getCompressedBytes().length + " bytes");
+                                if (huffman.getDecodedBytes() != null) {
+
+                                    System.out.println("Unzipped size: " + huffman.getDecodedBytes().length + " bytes");
+                                }
+                                File excluder = new File(compressedHuffmanFile);
+                                excluder.delete();
+                                excluder = new File(decodedHuffmanFile);
+                                excluder.delete();
+                                break;
+                            }
+                            raf.close();
+
+                        }
+                    case 7:
+                        try (Scanner scanner = new Scanner(System.in)) {
+                            while (true) {
+                                System.out.println("1. KMP");
+                                System.out.println("2. Sair");
+
+                                int choice = Integer.parseInt(scanner.nextLine());
+
+                                if (choice == 1) {
+                                    raf = new RandomAccessFile("DataBase/films.db", "rw");
+                                    byte[] data = new byte[(int) raf.length()];
+                                    raf.read(data);
+
+                                    System.out.print("Input the pattern: ");
+                                    String patternString = (scanner.nextLine());
+                                    byte[] pattern = patternString.getBytes();
+                                    Kmp kmp = new Kmp(pattern, data);
+
+                                    int[] result = kmp.kmpSearch();
+
+                                    if (result[1] != -1) {
+                                        System.out.println(
+                                                "Pattern found at position " + result[1] + " with " + result[0]
+                                                        + " comparisons.");
+                                    } else {
+                                        System.out.println("Pattern not found.");
+                                    }
+                                    raf.close();
+                                } else if (choice == 2) {
+                                    System.out.println("Exiting...");
+                                    break;
+                                } else {
+                                    System.out.println("Invalid option. Please try again.");
+                                }
+                            }
+                        }
+                        break;
+                    case 8:
+                        Scanner scanner = new Scanner(System.in);
+                        raf = new RandomAccessFile("DataBase/films.db", "rw");
+                        byte[] data = new byte[(int) raf.length()];
+                        raf.read(data);
+
+                        System.out.print("Input the pattern: ");
+                        String patternString = (scanner.nextLine());
+                        byte[] pattern = patternString.getBytes();
+
+                        BoyerMoore boyerMoore = new BoyerMoore(pattern, data);
+                        int result = boyerMoore.boyerMooreSearch();
+
+                        if (result != -1) {
+                            System.out.println("Pattern found at index " + result);
+                        } else {
+                            System.out.println("Pattern not found");
+                        }
+                        break;
+                    case 9:
                         System.out.println("Exiting");
                         System.exit(0); // Exit the program
                         break;
-
                     default:
                         System.out.println("Invalid option. Please select a valid option.");
                         break;
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (
+
+        NumberFormatException e) {
             e.printStackTrace();
         }
+
     }
 }

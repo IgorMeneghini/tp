@@ -1,4 +1,4 @@
-package Huffman;
+package Compressions.Huffman;
 
 class Node implements Comparable<Node> {
     byte data;
