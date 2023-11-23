@@ -13,7 +13,7 @@ import java.util.Map;
 public class Lzw {
     private Map<Integer, List<Byte>> dictionary;
     private byte[] inputData;
-    private String encodedFileLzw = "DataBase/EncodedFileLzw.db";
+    private String encodedFileLzw = "DataBase\\EncodedFileLzw.db";
 
     public Lzw(byte[] input) {
         startDictionary(input);
@@ -55,35 +55,6 @@ public class Lzw {
         }
         writeVLQToBinaryFile(result, "DataBase/EncodedFileLzw.db");
         System.out.println("Compression completed");
-    }
-
-    public void decode() throws IOException {
-        List<Integer> integerList = readFile();
-        System.out.println();
-        List<Byte> byteArray = new ArrayList<>();
-    
-        for (Integer integer : integerList) {
-            System.out.print(integer + " ");
-            List<Byte> dictionaryEntry = this.dictionary.get(integer);
-    
-            // Check if the dictionary contains an entry for the given integer
-            if (dictionaryEntry != null) {
-                for (byte b : dictionaryEntry) {
-                    byteArray.add(b);
-                }
-            } else {
-                System.out.println("Entry not found in dictionary for integer: " + integer);
-            }
-        }
-    
-        byte[] bytes = new byte[byteArray.size()];
-        for (int i = 0; i < byteArray.size(); i++) {
-            bytes[i] = byteArray.get(i);
-        }
-    
-        RandomAccessFile raf = new RandomAccessFile("DataBase/DecodedFileLzw.db", "rw");
-        raf.write(bytes);
-        raf.close();
     }
 
     public static void writeVLQToBinaryFile(List<Integer> compressedData, String filePath) {
@@ -132,6 +103,65 @@ public class Lzw {
             }
         }
         return -1;
+    }
+
+    public void decode() throws IOException {
+        List<Integer> integerList = readVLQFile();
+        System.out.println();
+        List<Byte> byteArray = new ArrayList<>();
+
+        for (Integer integer : integerList) {
+            System.out.print(integer + " ");
+            List<Byte> dictionaryEntry = this.dictionary.get(integer);
+
+            // Check if the dictionary contains an entry for the given integer
+            if (dictionaryEntry != null) {
+                for (byte b : dictionaryEntry) {
+                    byteArray.add(b);
+                }
+            } else {
+                System.out.println("Entry not found in dictionary for integer: " + integer);
+            }
+        }
+
+        byte[] bytes = new byte[byteArray.size()];
+        for (int i = 0; i < byteArray.size(); i++) {
+            bytes[i] = byteArray.get(i);
+        }
+
+        RandomAccessFile raf = new RandomAccessFile("DataBase/DecodedFileLzw.db", "rw");
+        raf.write(bytes);
+        raf.close();
+    }
+
+    public List<Integer> readVLQFile() throws IOException {
+        try (RandomAccessFile raf = new RandomAccessFile(encodedFileLzw, "rw")) {
+            List<Integer> result = new ArrayList<>();
+            while (true) {
+                try {
+                    result.add(readVLQ(raf));
+                } catch (EOFException e) {
+                    // End of file reached
+                    break;
+                }
+            }
+            return result;
+        } catch (IOException e) {
+            // Handle or log the exception
+            throw e; // You can rethrow the exception or handle it as needed
+        }
+    }
+
+    private static int readVLQ(RandomAccessFile raf) throws IOException {
+        int value = 0;
+        int shift = 0;
+        byte b;
+        do {
+            b = raf.readByte();
+            value |= (b & 0x7F) << shift;
+            shift += 7;
+        } while ((b & 0x80) != 0);
+        return value;
     }
 
     private boolean contains(List<Byte> byteArray) {

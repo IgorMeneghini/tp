@@ -14,7 +14,7 @@ import Model.Film;
 
 public class FilmParser {
     // Define the path to the CSV file
-    private static final String csvFilePath = "DataBase/netflix_titles.csv";
+    private static final String csvFilePath = "DataBase\\netflix_titles.csv";
     // Create an instance of the Crud class
     private static Crud crud = new Crud();
 

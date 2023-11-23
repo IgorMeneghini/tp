@@ -11,7 +11,7 @@ import archive.Crud;
 
 public class ExternalMergeSorting {
     private RandomAccessFile raf; // RandomAccessFile for reading the input database
-    private final String dbFilePath = "DataBase/films.db"; // Path to the input database file
+    private final String dbFilePath = "DataBase\\films.db"; // Path to the input database file
     private String outputFilePath; // Path to the output sorted database file
 
     public ExternalMergeSorting() {
@@ -19,7 +19,7 @@ public class ExternalMergeSorting {
             // Initialize the RandomAccessFile for reading the input database
             raf = new RandomAccessFile(dbFilePath, "r");
             raf.seek(4); // Skip the initial data
-            this.outputFilePath = "DataBase/sortedFilms.db"; // Set the output file path
+            this.outputFilePath = "DataBase\\sortedFilms.db"; // Set the output file path
 
             // Create and initialize a new RandomAccessFile for writing the sorted output
             RandomAccessFile outputRaf = new RandomAccessFile(outputFilePath, "rw");
@@ -57,7 +57,7 @@ public class ExternalMergeSorting {
                 if (chunk.size() >= chunkSize) {
                     // Sort the chunk and save it to a temporary file
                     quickSort(chunk);
-                    String chunkFileName = "DataBase/chunk" + chunkCount + ".db";
+                    String chunkFileName = "DataBase\\chunk" + chunkCount + ".db";
                     chunkFileNames.add(chunkFileName);
 
                     // Create a new RandomAccessFile for the temporary chunk file
@@ -75,7 +75,7 @@ public class ExternalMergeSorting {
             // Process the remaining data if any
             if (!chunk.isEmpty()) {
                 quickSort(chunk);
-                String chunkFileName = "DataBase/chunk" + chunkCount + ".db";
+                String chunkFileName = "DataBase\\chunk" + chunkCount + ".db";
                 chunkFileNames.add(chunkFileName);
 
                 // Create a new RandomAccessFile for the remaining chunk data
