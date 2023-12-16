@@ -193,4 +193,11 @@ public class Film {
         }
     }
 
+    public Object getDescription() {
+        return null;
+    }
+
+    public void setDescription(String encrypt) {
+    }
+
 }
